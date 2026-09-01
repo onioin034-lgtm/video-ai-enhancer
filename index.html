@@ -1,12 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>MDL Video AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MDL Video AI</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b0b0b;
+    color:white;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:25px 15px;
+}
+
+h1{
+    text-align:center;
+    font-size:32px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#aaa;
+    margin-bottom:25px;
+}
+
+.box{
+    background:#171717;
+    padding:20px;
+    border-radius:18px;
+    margin-bottom:18px;
+}
+
+.upload{
+    display:block;
+    border:2px dashed #555;
+    border-radius:15px;
+    padding:35px 10px;
+    text-align:center;
+    cursor:pointer;
+}
+
+.upload:hover{
+    border-color:white;
+}
+
+input{
+    display:none;
+}
+
+video{
+    width:100%;
+    margin-top:20px;
+    border-radius:12px;
+    display:none;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:7px;
+}
+
+select,button{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
+}
+
+select{
+    background:#292929;
+    color:white;
+}
+
+button{
+    margin-top:20px;
+    background:white;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.8;
+}
+
+#status{
+    text-align:center;
+    color:#aaa;
+    margin-top:15px;
+}
+</style>
 </head>
 
 <body>
-  <h1>🚀 MDL Video AI</h1>
-  <p>الموقع يعمل بنجاح ✅</p>
+
+<div class="container">
+
+<h1>🚀 MDL Video AI</h1>
+
+<div class="subtitle">
+تحسين جودة الفيديو من المتصفح
+</div>
+
+<div class="box">
+
+<label class="upload">
+🎥
+<br><br>
+اضغط لاختيار فيديو
+
+<input type="file" id="videoInput" accept="video/*">
+
+</label>
+
+<video id="video" controls></video>
+
+</div>
+
+<div class="box">
+
+<label>الدقة المطلوبة</label>
+
+<select id="quality">
+
+<option value="1080">1080p Full HD</option>
+<option value="1440">2K</option>
+<option value="2160">4K</option>
+
+</select>
+
+<label>قوة التحسين</label>
+
+<select id="enhance">
+
+<option>خفيف</option>
+<option>متوسط</option>
+<option>قوي</option>
+
+</select>
+
+<button id="enhanceBtn">
+✨ تحسين الفيديو
+</button>
+
+<div id="status">
+جاهز لاختيار الفيديو
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const input = document.getElementById("videoInput");
+const video = document.getElementById("video");
+const status = document.getElementById("status");
+
+input.addEventListener("change", function(){
+
+    const file = this.files[0];
+
+    if(!file) return;
+
+    const url = URL.createObjectURL(file);
+
+    video.src = url;
+    video.style.display = "block";
+
+    status.textContent = "تم اختيار الفيديو ✅";
+
+});
+
+document.getElementById("enhanceBtn").addEventListener("click", function(){
+
+    if(!input.files.length){
+
+        alert("اختار فيديو أولاً 🎥");
+        return;
+
+    }
+
+    const quality =
+        document.getElementById("quality").value;
+
+    status.textContent =
+        "تم اختيار دقة " + quality + "p ✅";
+
+});
+
+</script>
+
 </body>
 </html>
