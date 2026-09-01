@@ -1,1 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مُنزِّل الفيديوهات | Video Downloader</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Cairo',sans-serif; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; overflow-x:hidden;
+  }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background: radial-gradient(circle at 20% 30%,rgba(255,255,255,.15),transparent 50%),
+                radial-gradient(circle at 80% 70%,rgba(255,255,255,.1),transparent 50%);
+    pointer-events:none;
+  }
+  .container {
+    width:100%; max-width:900px;
+    background: rgba(255,255,255,.12);
+    backdrop-filter: blur(20px);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:24px; padding:40px 30px;
+    box-shadow: 0 25px 60px rgba(0,0,0,.3);
+    position:relative; z-index:1;
+  }
+  .logo { text-align:center; margin-bottom:10px; font-size:50px; }
+  h1 {
+    text-align:center; color:#fff; font-size:32px; font-weight:800;
+    margin-bottom:8px; text-shadow:0 2px 10px rgba(0,0,0,.2);
+  }
+  .subtitle { text-align:center; color:rgba(255,255,255,.85); margin-bottom:30px; font-size:16px; }
+  .input-wrap {
+    display:flex; gap:10px; margin-bottom:20px;
+    background:rgba(255,255,255,.95); border-radius:14px;
+    padding:6px; box-shadow:0 10px 30px rgba(0,0,0,.15);
+  }
+  #urlInput {
+    flex:1; border:none; outline:none; padding:16px 18px;
+    font-size:16px; background:transparent; color:#333;
+    border-radius:10px;
+  }
+  #urlInput::placeholder { color:#999; }
+  .btn-download {
+    background: linear-gradient(135deg,#ff6b6b,#ee5a6f);
+    color:#fff; border:none; padding:0 28px;
+    border-radius:10px; font-weight:700; cursor:pointer;
+    font-size:16px; transition:transform .2s, box-shadow .2s;
+    display:flex; align-items:center; gap:8px;
+  }
+  .btn-download:hover { transform:translateY(-2px); box-shadow:0 10px 25px rgba(238,90,111,.5); }
+  .platforms {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px; margin-top:25px;
+  }
+  .platform {
+    background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.2);
+    padding:18px 12px; border-radius:14px; text-align:center;
+    color:#fff; cursor:pointer; transition:all .3s;
+    backdrop-filter: blur(10px);
+  }
+  .platform:hover {
+    background:rgba(255,255,255,.25);
+    transform:translateY(-4px);
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+  }
+  .platform .icon { font-size:32px; margin-bottom:6px; }
+  .platform .name { font-weight:600; font-size:14px; }
+  .platform.active { background:rgba(255,255,255,.35); border-color:#fff; }
+  .features {
+    margin-top:30px; display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+  }
+  .feature {
+    background:rgba(255,255,255,.1); padding:18px;
+    border-radius:12px; text-align:center; color:#fff;
+    border:1px solid rgba(255,255,255,.15);
+  }
+  .feature .f-icon { font-size:28px; margin-bottom:8px; }
+  .feature h3 { font-size:15px; margin-bottom:4px; }
+  .feature p { font-size:12px; opacity:.85; }
+  .status {
+    margin-top:20px; padding:14px; border-radius:12px;
+    text-align:center; color:#fff; font-weight:600;
+    display:none;
+  }
+  .status.show { display:block; animation:slide .4s ease; }
+  .status.success { background:rgba(46,204,113,.3); border:1px solid #2ecc71; }
+  .status.error { background:rgba(231,76,60,.3); border:1px solid #e74c3c; }
+  .status.info { background:rgba(52,152,219,.3); border:1px solid #3498db; }
+  @keyframes slide { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+  .footer { text-align:center; margin-top:25px; color:rgba(255,255,255,.7); font-size:13px; }
+  .steps {
+    margin-top:25px; background:rgba(0,0,0,.15);
+    padding:18px; border-radius:12px; color:#fff;
+  }
+  .steps h3 { margin-bottom:10px; font-size:16px; }
+  .steps ol { padding-right:20px; line-height:1.8; font-size:14px; }
+  @media(max-width:600px){
+    h1{font-size:24px;}
+    .input-wrap{flex-direction:column;}
+    .btn-download{padding:14px; justify-content:center;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">🎬</div>
+  <h1>مُنزِّل الفيديوهات الاحترافي</h1>
+  <p class="subtitle">حمّل فيديوهاتك المفضلة بدون علامة مائية وبدقة عالية 🚀</p>
 
+  <div class="input-wrap">
+    <input type="text" id="urlInput" placeholder="📋 الصق رابط الفيديو هنا (Facebook, Instagram, TikTok, YouTube, Twitter)...">
+    <button class="btn-download" onclick="downloadVideo()">
+      <span>⬇️</span><span>تنزيل</span>
+    </button>
+  </div>
+
+  <div id="status" class="status"></div>
+
+  <div class="platforms">
+    <div class="platform" onclick="setPlatform('facebook')">
+      <div class="icon">📘</div><div class="name">Facebook</div>
+    </div>
+    <div class="platform" onclick="setPlatform('instagram')">
+      <div class="icon">📸</div><div class="name">Instagram</div>
+    </div>
+    <div class="platform" onclick="setPlatform('tiktok')">
+      <div class="icon">🎵</div><div class="name">TikTok</div>
+    </div>
+    <div class="platform" onclick="setPlatform('youtube')">
+      <div class="icon">▶️</div><div class="name">YouTube</div>
+    </div>
+    <div class="platform" onclick="setPlatform('twitter')">
+      <div class="icon">🐦</div><div class="name">Twitter / X</div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature"><div class="f-icon">✨</div><h3>بدون علامة مائية</h3><p>فيديوهات نظيفة تماماً</p></div>
+    <div class="feature"><div class="f-icon">🎯</div><h3>جودة عالية HD</h3><p>أعلى دقة متاحة</p></div>
+    <div class="feature"><div class="f-icon">⚡</div><h3>سريع ومجاني</h3><p>تنزيل فوري بلا حدود</p></div>
+    <div class="feature"><div class="f-icon">🔒</div><h3>آمن وخاص</h3><p>لا نحتفظ ببياناتك</p></div>
+  </div>
+
+  <div class="steps">
+    <h3>📝 طريقة الاستخدام:</h3>
+    <ol>
+      <li>انسخ رابط الفيديو من التطبيق (Facebook, Instagram, TikTok...)</li>
+      <li>الصق الرابط في الحقل أعلاه</li>
+      <li>اضغط على زر "تنزيل" وسيتم توجيهك للخدمة المناسبة</li>
+      <li>اختر الجودة المطلوبة واضغط تنزيل</li>
+    </ol>
+  </div>
+
+  <div class="footer">© 2026 مُنزِّل الفيديوهات | صُمم بحب ❤️</div>
+</div>
+
+<script>
+let selectedPlatform = null;
+
+function showStatus(msg, type='info') {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.className = 'status show ' + type;
+}
+
+function detectPlatform(url) {
+  url = url.toLowerCase();
+  if (url.includes('facebook.com') || url.includes('fb.watch')) return 'facebook';
+  if (url.includes('instagram.com')) return 'instagram';
+  if (url.includes('tiktok.com') || url.includes('vm.tiktok')) return 'tiktok';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+  if (url.includes('twitter.com') || url.includes('x.com')) return 'twitter';
+  return null;
+}
+
+function setPlatform(p) {
+  selectedPlatform = p;
+  document.querySelectorAll('.platform').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  showStatus('✅ تم اختيار: ' + p.toUpperCase(), 'success');
+}
+
+function downloadVideo() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) {
+    showStatus('⚠️ الرجاء إدخال رابط الفيديو أولاً', 'error');
+    return;
+  }
+  if (!url.startsWith('http')) {
+    showStatus('❌ الرابط غير صالح، يجب أن يبدأ بـ http', 'error');
+    return;
+  }
+
+  const platform = selectedPlatform || detectPlatform(url);
+  if (!platform) {
+    showStatus('❌ لم نتمكن من تحديد المنصة، اختر المنصة يدوياً', 'error');
+    return;
+  }
+
+  // توجيه إلى خدمة التنزيل المناسبة
+  const services = {
+    facebook: 'https://snapsave.io/ar',
+    instagram: 'https://snapinsta.app/ar',
+    tiktok: 'https://snaptik.app/ar',
+    youtube: 'https://en.savefrom.net/',
+    twitter: 'https://twittervideodownloader.com/'
+  };
+
+  showStatus('🔄 جاري التوجيه إلى خدمة تنزيل ' + platform.toUpperCase() + '...', 'info');
+  
+  setTimeout(() => {
+    window.open(services[platform], '_blank');
+    showStatus('✅ تم فتح الخدمة في نافذة جديدة. الصق الرابط هناك واضغط تنزيل!', 'success');
+  }, 800);
+}
+
+// إدخال بـ Enter
+document.getElementById('urlInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') downloadVideo();
+});
+</script>
+</body>
+</html>
